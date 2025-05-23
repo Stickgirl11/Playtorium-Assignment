@@ -1,0 +1,8 @@
+[
+  { "id": 1, "name": "T-Shirt", "price": 350, "shopping_category_id": 1 },
+  { "id": 2, "name": "Hat", "price": 250, "shopping_category_id": 1 },
+  { "id": 3, "name": "Hoodie", "price": 700, "shopping_category_id": 1 },
+  { "id": 4, "name": "Watch", "price": 850, "shopping_category_id": 2 },
+  { "id": 5, "name": "Bag", "price": 640, "shopping_category_id": 3 },
+  { "id": 6, "name": "Belt", "price": 230, "shopping_category_id": 3 }
+]

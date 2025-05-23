@@ -1,0 +1,39 @@
+[
+  {
+    "id": 1,
+    "name": "Fixed amount",
+    "parameters": [
+      { "key": "amount", "value": 50 }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Percentage discount",
+    "parameters": [
+      { "key": "percent", "value": 10 }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Percentage discount by item category",
+    "parameters": [
+      { "key": "percent", "value": 15 }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Discount by points",
+    "parameters": [
+      { "key": "max_price_percent", "value": 20 },
+      { "key": "one_point_price", "value": 1 }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Special campaigns",
+    "parameters": [
+      { "key": "every", "value": 300 },
+      { "key": "discount", "value": 40 }
+    ]
+  }
+]

@@ -1,0 +1,8 @@
+[
+  { "id": 1, "key": "amount", "value": 50, "campaign_id": 1 },
+  { "id": 2, "key": "percent", "value": 10, "campaign_id": 2 },
+  { "id": 3, "key": "percent", "value": 15, "campaign_id": 3 },
+  { "id": 4, "key": "max_price_points", "value": 20, "campaign_id": 4 },
+  { "id": 5, "key": "every", "value": 300, "campaign_id": 5 },
+  { "id": 6, "key": "discount", "value": 40, "campaign_id": 5 }
+]

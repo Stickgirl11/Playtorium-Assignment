@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Fixed amount", "campaign_category_id": 1 },
+  { "id": 2, "name": "Percentage discount", "campaign_category_id": 1 },
+  { "id": 3, "name": "Percentage discount by item category", "campaign_category_id": 2 },
+  { "id": 4, "name": "Discount by points", "campaign_category_id": 2 },
+  { "id": 5, "name": "Special campaigns", "campaign_category_id": 3 }
+]

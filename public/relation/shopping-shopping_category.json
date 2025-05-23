@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "T-Shirt",
+    "price": 350,
+    "category": { "id": 1, "name": "Clothing" }
+  },
+  {
+    "id": 2,
+    "name": "Hat",
+    "price": 250,
+    "category": { "id": 1, "name": "Clothing" }
+  },
+  {
+    "id": 3,
+    "name": "Hoodie",
+    "price": 700,
+    "category": { "id": 1, "name": "Clothing" }
+  },
+  {
+    "id": 4,
+    "name": "Watch",
+    "price": 850,
+    "category": { "id": 2, "name": "Electronics" }
+  },
+  {
+    "id": 5,
+    "name": "Bag",
+    "price": 640,
+    "category": { "id": 3, "name": "Accessories" }
+  },
+  {
+    "id": 6,
+    "name": "Belt",
+    "price": 230,
+    "category": { "id": 3, "name": "Accessories" }
+  }
+]

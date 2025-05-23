@@ -2,12 +2,26 @@ import { useState, useCallback, useMemo } from 'react'
 import ShoppingList from '../src/components/templates/ShoppingList'
 import ShoppingCateList from '../src/components/templates/ShoppingCateList'
 import CampaignList from '../src/components/templates/CampaignList'
+import DiscountPoint from '../src/components/templates/DiscountPoint'
+
+enum CampaignId {
+  FIXED_AMOUNT = 1,
+  PERCENT_DISCOUNT = 2,
+  PERCENT_DISCOUNT_BY_CATEGORY = 3,
+  DISCOUNT_BY_POINTS = 4,
+  SPECIAL_CAMPAIGN = 5,
+}
 
 export default function Page() {
   const [shoppings, setShoppings] = useState([])
   const [campaigns, setCampaigns] = useState([])
-  const [shoppingsCate, setShoppingsCate] = useState([])
+  const [shoppingsCate, setShoppingsCate] = useState([]) //* for campaign PERCENT_DISCOUNT_BY_CATEGORY
+  const [points, setPoints] = useState(0) //* for campaign DISCOUNT_BY_POINTS
   const [selecting, setSelecting] = useState(true)
+  const [result, setResult] = useState({
+    discount_price: 0,
+    final_price: 0,
+  })
 
   const totalPrice = useMemo(() => {
     const sum_price = shoppings.reduce((accumulator, { price }) => {
@@ -16,24 +30,61 @@ export default function Page() {
     return sum_price
   }, [shoppings])
 
-  const discount = 0
-  const finalPrice = 0
+  const calculateFinalPrice = useCallback(async () => {
+    const mapShoppings = shoppings.map(({ value, label, price, category }) => {
+      return {
+        id: value,
+        name: label,
+        price,
+        category,
+      }
+    })
+    const mapCampaigns = campaigns.map(({ value, label, category }) => {
+      return {
+        id: value,
+        name: label,
+        category,
+      }
+    })
+    const mapShoppingsCate = shoppingsCate.map(({ value, label }) => {
+      return {
+        id: value,
+        name: label,
+      }
+    })
 
-  const calculateFinalPrice = useCallback(() => {
-    //todo call post api here
-    //todo call post api here
-  }, [shoppings, campaigns])
+    const response = await fetch('/api/discount/calculate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        shoppings: mapShoppings,
+        campaigns: mapCampaigns,
+        shoppingsCate: mapShoppingsCate,
+        points,
+      }),
+    })
+
+    const result = await response.json()
+    setResult({
+      discount_price: result?.discount_price ?? 0,
+      final_price: result?.final_price ?? 0,
+    })
+  }, [shoppings, campaigns, shoppingsCate, points, setResult])
 
   const disabledCalculateFinalPrice = useMemo(() => {
     return shoppings.length <= 0
   }, [shoppings])
 
   const showShoppingsCate = useMemo(() => {
-    return campaigns.find(({ value }) => value === 3)
+    return campaigns.find(
+      ({ value }) => value === CampaignId.PERCENT_DISCOUNT_BY_CATEGORY,
+    )
   }, [campaigns])
 
   const showDiscountByPoints = useMemo(() => {
-    return campaigns.find(({ value }) => value === 4)
+    return campaigns.find(({ value }) => value === CampaignId.DISCOUNT_BY_POINTS)
   }, [campaigns])
 
   return (
@@ -51,6 +102,24 @@ export default function Page() {
         <CampaignList
           campaigns={campaigns}
           setCampaigns={(list) => {
+            const prevList = campaigns.map(({ value }) => value)
+            const currentList = list.map(({ value }) => value)
+            const latestList = prevList.filter((value) => !currentList.includes(value))
+
+            const resetShoppingsCate = latestList.find(
+              (value) => value === CampaignId.PERCENT_DISCOUNT_BY_CATEGORY,
+            )
+            if (resetShoppingsCate) {
+              setShoppingsCate([])
+            }
+
+            const resetDiscountPoints = latestList.find(
+              (value) => value === CampaignId.DISCOUNT_BY_POINTS,
+            )
+            if (resetDiscountPoints) {
+              setPoints(0)
+            }
+
             setSelecting(true)
             setCampaigns(list)
           }}
@@ -65,11 +134,10 @@ export default function Page() {
           />
         )}
         {showDiscountByPoints && (
-          <ShoppingCateList
-            shoppingsCate={shoppingsCate}
-            setShoppingsCate={(list) => {
+          <DiscountPoint
+            setPoints={(p) => {
               setSelecting(true)
-              setShoppingsCate(list)
+              setPoints(p)
             }}
           />
         )}
@@ -97,11 +165,11 @@ export default function Page() {
         <>
           <div id="discount">
             <span>discount: </span>
-            <span>{discount}</span>
+            <span>{result.discount_price}</span>
           </div>
           <div id="final-price">
             <span>final price: </span>
-            <span>${finalPrice}</span>
+            <span>{result.final_price}</span>
           </div>
         </>
       )}

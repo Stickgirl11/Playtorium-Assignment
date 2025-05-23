@@ -1,0 +1,5 @@
+[
+  { "id": 1, "name": "coupon", "execution_order": 1 },
+  { "id": 2, "name": "on-top", "execution_order": 2 },
+  { "id": 3, "name": "seasonal", "execution_order": 3 }
+]

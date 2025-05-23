@@ -1,21 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Dropdown } from '../atoms'
+import { Dropdown } from '../molecules'
 
 const ShoppingList = ({ shoppings, setShoppings }) => {
   const [label, setLabel] = useState('select shoppings')
   const [options, setOptions] = useState([])
 
   const getList = useCallback(() => {
-    fetch('/api/shopping/list')
+    fetch('/api/discount/shopping/list')
       .then((res) => {
         return res.json()
       })
       .then((data) => {
-        const mapData = data.map(({ id, name, price }) => {
+        const mapData = data.map(({ id, name, price, category }) => {
           return {
             value: id,
             label: `${name}: ${price} THB`,
             price,
+            category,
           }
         })
         setOptions(mapData)

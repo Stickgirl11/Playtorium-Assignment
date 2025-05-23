@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Dropdown } from '../atoms'
+import { Dropdown } from '../molecules'
 
 const ShoppingCateList = ({ shoppingsCate, setShoppingsCate }) => {
   const [label, setLabel] = useState('select shoppings cate')
   const [options, setOptions] = useState([])
 
   const getList = useCallback(() => {
-    fetch('/api/shopping/category/list')
+    fetch('/api/discount/shopping/category/list')
       .then((res) => {
         return res.json()
       })

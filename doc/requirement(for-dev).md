@@ -2,13 +2,13 @@ task : 1.people added item -> 2.apply campaign discount -> 3.calculate final pri
 
 1. people added item
 -  each item have category
-[master-table] shopping_item_category (id, name, shopping_item_id)
+[master-table] shopping_item_category (id, name)
     1 Clothing 
     2 Electronics 
     3 Accessories
 
 - can select multiple item :
-[main-table] shopping_item (id, name, price, shopping_item_category)
+[main-table] shopping_item (id, name, price, shopping_item_category_id)
     1 T-Shirt 350 1
     2 Hat 250  1
     3 Hoodie 700 1
@@ -36,11 +36,10 @@ task : 1.people added item -> 2.apply campaign discount -> 3.calculate final pri
 [table] campaign_parameter (id, key, value, campaign_id)
     1 amount     50 1 
     2 percent    10 2
-    ? category   x 3 
-    ? percent    15 3
-    ? max_points 20 4 
-    ? every      300 5 
-    ? discount   40 5 
+    3 percent    15 3
+    4 max_price_points 20 4 
+    5 every      300 5 
+    6 discount   40 5 
 
 --------
 3.calculate final price
@@ -95,5 +94,3 @@ task : 1.people added item -> 2.apply campaign discount -> 3.calculate final pri
  2.1.2 Discount by points (integer number input with side-note describe)
 3. apply calculation (button)
 4. display final price (text)
-
-https://supabase.com/dashboard/project/sbwrlnobkcfaqcyfwgtz/editor/17243

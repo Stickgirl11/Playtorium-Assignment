@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Dropdown } from '../atoms'
+import { Dropdown } from '../molecules'
 
 const CampaignList = ({ campaigns, setCampaigns }) => {
   const [label, setLabel] = useState('select campaigns')
   const [options, setOptions] = useState<any>([])
 
   const getList = useCallback(() => {
-    fetch('/api/campaign/list')
+    fetch('/api/discount/campaign/list')
       .then((res) => {
         return res.json()
       })
