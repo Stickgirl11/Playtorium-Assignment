@@ -21,7 +21,8 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
@@ -32,7 +33,13 @@
   "exclude": [
     "node_modules"
   ],
-  "baseUrl": "src/",
+  // "baseUrl": "src/",
   "paths": {
+    "@/components/*": [
+      "components/*"
+    ],
+    "@/lib/*": [
+      "lib/*"
+    ]
   }
 }

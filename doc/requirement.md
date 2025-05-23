@@ -26,8 +26,8 @@ task : 1.people added item -> 2.apply campaign discount -> 3.calculate final pri
 
 - can apply multiple (but only 1 per category)
 [main-table] campaign (id, name, campaign_category_id)
-    1 Fixed amount                            1                            
-    2 Percentage discount                     1 
+    1 Fixed amount                            1         
+    2 Percentage discount                     1
     3 Percentage discount by item category    2      
     4 Discount by points                      2      
     5 Special campaigns                       3    
@@ -95,3 +95,5 @@ task : 1.people added item -> 2.apply campaign discount -> 3.calculate final pri
  2.1.2 Discount by points (integer number input with side-note describe)
 3. apply calculation (button)
 4. display final price (text)
+
+https://supabase.com/dashboard/project/sbwrlnobkcfaqcyfwgtz/editor/17243
