@@ -102,11 +102,13 @@ function calDiscountByPoints(final_price, points, item) {
     parameters?.find(({ key }) => key === 'one_point_price')?.value ?? 0
   console.info('- [parameters] <one_point_price>: ', onePointPrice)
 
-  const maxDiscount = final_price * (maxPricePercent / 100)
-  console.info('- [cal] maxDiscount: ', maxDiscount)
-  const pointDiscount = points * onePointPrice
-  console.info('- [cal] pointDiscount: ', pointDiscount)
-  const discount = Math.min(pointDiscount, maxDiscount)
+  const maxDiscountPrice = final_price * (maxPricePercent / 100)
+  console.info('- [cal] maxDiscountPrice: ', maxDiscountPrice)
+  const roundDiscountPrice = Math.round(maxDiscountPrice) 
+  console.info('- [cal] roundDiscountPrice: ', roundDiscountPrice)
+  const pointDiscountPrice = points * onePointPrice
+  console.info('- [cal] pointDiscountPrice: ', pointDiscountPrice)
+  const discount = Math.min(pointDiscountPrice, roundDiscountPrice)
   const remain = final_price - discount
 
   return { discount, remain }
@@ -120,7 +122,7 @@ function calSpecialCampaign(final_price, item) {
   const discountEvery = parameters?.find(({ key }) => key === 'discount')?.value ?? 0
   console.info('- [parameters] <every>: ', every)
   console.info('- [parameters] <discount>: ', discountEvery)
-  const discount = Math.floor(final_price / every) * discountEvery
+  const discount = Math.round(final_price / every) * discountEvery
   const remain = final_price - discount
 
   return { discount, remain }
