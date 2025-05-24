@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Dropdown } from '../molecules'
 
+const defaultPlaceholder = 'select shoppings'
+
 const ShoppingList = ({ shoppings, setShoppings }) => {
-  const [label, setLabel] = useState('select shoppings')
+  const [label, setLabel] = useState(defaultPlaceholder)
   const [options, setOptions] = useState([])
 
   const getList = useCallback(() => {
@@ -25,6 +27,11 @@ const ShoppingList = ({ shoppings, setShoppings }) => {
 
   const handleSelect = useCallback(
     (list) => {
+      if (list.length === 0) {
+        setLabel(defaultPlaceholder)
+        setShoppings([])
+        return
+      }
       setShoppings(list)
 
       //* display shopping label

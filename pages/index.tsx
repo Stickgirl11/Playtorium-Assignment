@@ -73,9 +73,32 @@ export default function Page() {
     })
   }, [shoppings, campaigns, shoppingsCate, points, setResult])
 
-  const disabledCalculateFinalPrice = useMemo(() => {
-    return shoppings.length <= 0
-  }, [shoppings])
+  const showCalculateFinalPrice = useMemo(() => {
+    const selectedShopping = shoppings.length > 0
+    if (selectedShopping) {
+      const selectedCampaign = campaigns.length > 0
+      if (selectedCampaign) {
+        const selectedCampaign_3 = campaigns.some(
+          ({ value }) => value === CampaignId.PERCENT_DISCOUNT_BY_CATEGORY,
+        )
+        const selectedShoppingCate = shoppingsCate.length !== 0
+        if (selectedCampaign_3 && !selectedShoppingCate) {
+          return false
+        }
+
+        const selectedCampaign_4 = campaigns.some(
+          ({ value }) => value === CampaignId.DISCOUNT_BY_POINTS,
+        )
+        const selectedPoints = points > 0
+        if (selectedCampaign_4 && !selectedPoints) {
+          return false
+        }
+        return true
+      }
+      return true
+    }
+    return false
+  }, [shoppings, campaigns, shoppingsCate, points])
 
   const showShoppingsCate = useMemo(() => {
     return campaigns.find(
@@ -102,6 +125,11 @@ export default function Page() {
         <CampaignList
           campaigns={campaigns}
           setCampaigns={(list) => {
+            if (list.length === 0) {
+              setCampaigns([])
+              setSelecting(true)
+              return
+            }
             const prevList = campaigns.map(({ value }) => value)
             const currentList = list.map(({ value }) => value)
             const latestList = prevList.filter((value) => !currentList.includes(value))
@@ -126,6 +154,7 @@ export default function Page() {
         />
         {showShoppingsCate && (
           <ShoppingCateList
+            shoppings={shoppings}
             shoppingsCate={shoppingsCate}
             setShoppingsCate={(list) => {
               setSelecting(true)
@@ -147,12 +176,12 @@ export default function Page() {
         <span>{totalPrice}</span>
       </div>
       <button
-        disabled={disabledCalculateFinalPrice}
-        className={`px-4 py-2 rounded-xl transition-colors duration-200 shadow-md 
+        disabled={!showCalculateFinalPrice}
+        className={`w-[300px] px-4 py-2 rounded-xl transition-colors duration-200 shadow-md 
     ${
-      disabledCalculateFinalPrice
+      !showCalculateFinalPrice
         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        : 'bg-pink-600 text-white hover:bg-pink-700 cursor-pointer'
+        : 'bg-yellow-400 text-white hover:bg-yellow-500 cursor-pointer'
     }`}
         onClick={() => {
           setSelecting(false)
@@ -172,6 +201,18 @@ export default function Page() {
             <span>{result.final_price}</span>
           </div>
         </>
+      )}
+      {!selecting && (
+        <button
+          className={
+            'w-[300px] px-4 py-2 rounded-xl transition-colors duration-200 shadow-md bg-pink-600 text-white hover:bg-pink-700 cursor-pointer'
+          }
+          onClick={() => {
+            alert('order complete')
+          }}
+        >
+          สั่งสินค้า
+        </button>
       )}
     </div>
   )

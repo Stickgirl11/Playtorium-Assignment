@@ -16,7 +16,9 @@ export default function MultiDropdownMenu({
       ? selectedValues.filter((v) => v.value !== value)
       : [...selectedValues, option]
 
-    onChange(newSelection)
+    const currentSelect = option
+
+    onChange(newSelection, currentSelect)
   }
 
   const getItemClasses = (isActive, isDisabled) => {
@@ -28,8 +30,15 @@ export default function MultiDropdownMenu({
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
-          {label}
+        <MenuButton
+          className={
+            (selectedValues.length === 0 ? 'bg-white ' : '!bg-blue-100 ') +
+            'inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer'
+          }
+        >
+          <div className={selectedValues.length === 0 ? 'text-gray-500' : 'text-black'}>
+            {label}
+          </div>
         </MenuButton>
       </div>
 
@@ -51,8 +60,7 @@ export default function MultiDropdownMenu({
                 }
 
                 return (
-                  <div
-                    role="menuitem"
+                  <button
                     onClick={handleClick}
                     className={`flex w-full justify-between px-4 py-2 text-sm ${itemClass} ${
                       option?.disabled ? 'pointer-events-none' : 'cursor-pointer'
@@ -62,7 +70,7 @@ export default function MultiDropdownMenu({
                     {!option?.disabled && isSelected && (
                       <span className="text-green-500 font-bold">✓</span>
                     )}
-                  </div>
+                  </button>
                 )
               }}
             </MenuItem>

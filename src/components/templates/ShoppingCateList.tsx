@@ -1,9 +1,23 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Dropdown } from '../molecules'
 
-const ShoppingCateList = ({ shoppingsCate, setShoppingsCate }) => {
-  const [label, setLabel] = useState('select shoppings cate')
+const defaultPlaceholder = 'select shoppings cate'
+
+const ShoppingCateList = ({ shoppings, shoppingsCate, setShoppingsCate }) => {
+  const [label, setLabel] = useState(defaultPlaceholder)
   const [options, setOptions] = useState([])
+
+  const disabledOptionByShoppings = useMemo(() => {
+    const flattenShoppingsCategory = shoppings.map(({ category }) => category?.id)
+    return options.map((option: any) => {
+      const isShoppingsCategorySelected = flattenShoppingsCategory.includes(option?.value)
+      if (isShoppingsCategorySelected) {
+        return { ...option, disabled: false }
+      }
+
+      return { ...option, disabled: true }
+    })
+  }, [options, shoppings])
 
   const getList = useCallback(() => {
     fetch('/api/discount/shopping/category/list')
@@ -15,6 +29,7 @@ const ShoppingCateList = ({ shoppingsCate, setShoppingsCate }) => {
           return {
             value: id,
             label: name,
+            disabled: true,
           }
         })
         setOptions(mapData)
@@ -22,11 +37,17 @@ const ShoppingCateList = ({ shoppingsCate, setShoppingsCate }) => {
   }, [setOptions])
 
   const handleSelect = useCallback(
-    (list) => {
-      setShoppingsCate(list)
+    (list, current) => {
+      if (list.length === 0) {
+        setLabel(defaultPlaceholder)
+        setShoppingsCate([])
+        return
+      }
+      const currentList = [{ ...current }]
+      setShoppingsCate(currentList)
 
       //* display shopping label
-      const displayLabel = list
+      const displayLabel = currentList
         .map(({ label }) => {
           return label
         })
@@ -36,7 +57,7 @@ const ShoppingCateList = ({ shoppingsCate, setShoppingsCate }) => {
         setLabel(displayLabel)
       }
     },
-    [options],
+    [options, shoppingsCate],
   )
 
   useEffect(() => {
@@ -47,8 +68,8 @@ const ShoppingCateList = ({ shoppingsCate, setShoppingsCate }) => {
     <Dropdown
       label={label}
       selectedValues={shoppingsCate}
-      options={options}
-      onChange={(list) => handleSelect(list)}
+      options={disabledOptionByShoppings}
+      onChange={(list, currentSelect) => handleSelect(list, currentSelect)}
     />
   )
 }

@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Dropdown } from '../molecules'
 
+const defaultPlaceholder = 'select campaigns'
+
 const CampaignList = ({ campaigns, setCampaigns }) => {
-  const [label, setLabel] = useState('select campaigns')
+  const [label, setLabel] = useState(defaultPlaceholder)
   const [options, setOptions] = useState<any>([])
 
   const getList = useCallback(() => {
@@ -11,10 +13,15 @@ const CampaignList = ({ campaigns, setCampaigns }) => {
         return res.json()
       })
       .then((data) => {
-        const mapData = data.map(({ id, name, category }) => {
+        const mapData = data.map(({ id, name, category, parameters }) => {
+          const parameters_display = parameters.map(
+            ({ value, display_text, display_unit }) => {
+              return display_text + value + display_unit
+            },
+          )
           return {
             value: id,
-            label: name,
+            label: `${name} - ${parameters_display}`,
             category,
             disabled: false,
           }
@@ -25,6 +32,13 @@ const CampaignList = ({ campaigns, setCampaigns }) => {
 
   const handleSelect = useCallback(
     (list) => {
+      if (list.length === 0) {
+        setCampaigns([])
+        setOptions([...options].map((option) => ({ ...option, disabled: false })))
+        setLabel(defaultPlaceholder)
+        return
+      }
+
       setCampaigns(list)
 
       const campaignIdList = list.map(({ value }) => value)
