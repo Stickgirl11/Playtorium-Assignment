@@ -17,7 +17,6 @@ export default function Page() {
   const [campaigns, setCampaigns] = useState([])
   const [shoppingsCate, setShoppingsCate] = useState([]) //* for campaign PERCENT_DISCOUNT_BY_CATEGORY
   const [points, setPoints] = useState(0) //* for campaign DISCOUNT_BY_POINTS
-  const [selecting, setSelecting] = useState(true)
   const [result, setResult] = useState({
     discount_price: 0,
     final_price: 0,
@@ -73,32 +72,9 @@ export default function Page() {
     })
   }, [shoppings, campaigns, shoppingsCate, points, setResult])
 
-  const showCalculateFinalPrice = useMemo(() => {
-    const selectedShopping = shoppings.length > 0
-    if (selectedShopping) {
-      const selectedCampaign = campaigns.length > 0
-      if (selectedCampaign) {
-        const selectedCampaign_3 = campaigns.some(
-          ({ value }) => value === CampaignId.PERCENT_DISCOUNT_BY_CATEGORY,
-        )
-        const selectedShoppingCate = shoppingsCate.length !== 0
-        if (selectedCampaign_3 && !selectedShoppingCate) {
-          return false
-        }
-
-        const selectedCampaign_4 = campaigns.some(
-          ({ value }) => value === CampaignId.DISCOUNT_BY_POINTS,
-        )
-        const selectedPoints = points > 0
-        if (selectedCampaign_4 && !selectedPoints) {
-          return false
-        }
-        return true
-      }
-      return true
-    }
-    return false
-  }, [shoppings, campaigns, shoppingsCate, points])
+  const showCampaignList = useMemo(() => {
+    return shoppings?.length !== 0
+  }, [shoppings])
 
   const showShoppingsCate = useMemo(() => {
     return campaigns.find(
@@ -110,110 +86,184 @@ export default function Page() {
     return campaigns.find(({ value }) => value === CampaignId.DISCOUNT_BY_POINTS)
   }, [campaigns])
 
+  const showDiscountButton = useMemo(() => {
+    const selectedShopping = shoppings.length > 0
+    if (selectedShopping) {
+      const selectedCampaign = campaigns.length > 0
+      if (selectedCampaign) {
+        const selectedCampaign_3 = campaigns.some(
+          ({ value }) => value === CampaignId.PERCENT_DISCOUNT_BY_CATEGORY,
+        )
+        const notselectShoppingCate = shoppingsCate.length === 0
+        if (selectedCampaign_3 && notselectShoppingCate) {
+          return false
+        }
+        const selectedCampaign_4 = campaigns.some(
+          ({ value }) => value === CampaignId.DISCOUNT_BY_POINTS,
+        )
+        const notSelectedPoints = points === 0
+        if (selectedCampaign_4 && notSelectedPoints) {
+          return false
+        }
+        return true
+      }
+      return false
+    }
+    return false
+  }, [shoppings, campaigns, shoppingsCate, points])
+
+  const showSummitOrderButton = useMemo(() => {
+    if (shoppings.length > 0) {
+      if (campaigns.length > 0) {
+        const alreadyCalDiscount =
+          result?.discount_price !== 0 && result?.final_price !== 0
+        return alreadyCalDiscount
+      }
+      return true
+    }
+    return false
+  }, [shoppings, campaigns, result])
+
   return (
     <div className="p-8 pl-48 flex flex-col gap-4">
       <div>
         <ShoppingList
           shoppings={shoppings}
           setShoppings={(list) => {
-            setSelecting(true)
+            if (list.length === 0) {
+              setShoppings([])
+              setCampaigns([])
+              setShoppingsCate([])
+              setPoints(0)
+              setResult({ discount_price: 0, final_price: 0 })
+              return
+            }
+
             setShoppings(list)
+            setCampaigns([])
+            setShoppingsCate([])
+            setPoints(0)
+            setResult({ discount_price: 0, final_price: 0 })
           }}
         />
       </div>
       <div className="flex gap-5">
-        <CampaignList
-          campaigns={campaigns}
-          setCampaigns={(list) => {
-            if (list.length === 0) {
-              setCampaigns([])
-              setSelecting(true)
-              return
-            }
-            const prevList = campaigns.map(({ value }) => value)
-            const currentList = list.map(({ value }) => value)
-            const latestList = prevList.filter((value) => !currentList.includes(value))
+        {showCampaignList && (
+          <CampaignList
+            campaigns={campaigns}
+            setCampaigns={(list) => {
+              setResult({ discount_price: 0, final_price: 0 })
+              if (list.length === 0) {
+                setCampaigns([])
+                return
+              }
+              const prevList = campaigns.map(({ value }) => value)
+              const currentList = list.map(({ value }) => value)
+              const latestList = prevList.filter((value) => !currentList.includes(value))
 
-            const resetShoppingsCate = latestList.find(
-              (value) => value === CampaignId.PERCENT_DISCOUNT_BY_CATEGORY,
-            )
-            if (resetShoppingsCate) {
-              setShoppingsCate([])
-            }
+              const resetShoppingsCate = latestList.find(
+                (value) => value === CampaignId.PERCENT_DISCOUNT_BY_CATEGORY,
+              )
+              if (resetShoppingsCate) {
+                setShoppingsCate([])
+              }
 
-            const resetDiscountPoints = latestList.find(
-              (value) => value === CampaignId.DISCOUNT_BY_POINTS,
-            )
-            if (resetDiscountPoints) {
-              setPoints(0)
-            }
+              const resetDiscountPoints = latestList.find(
+                (value) => value === CampaignId.DISCOUNT_BY_POINTS,
+              )
+              if (resetDiscountPoints) {
+                setPoints(0)
+              }
 
-            setSelecting(true)
-            setCampaigns(list)
-          }}
-        />
+              setCampaigns(list)
+            }}
+          />
+        )}
         {showShoppingsCate && (
           <ShoppingCateList
             shoppings={shoppings}
             shoppingsCate={shoppingsCate}
             setShoppingsCate={(list) => {
-              setSelecting(true)
+              setResult({ discount_price: 0, final_price: 0 })
+              if (list.length === 0) {
+                setShoppingsCate([])
+                return
+              }
+
               setShoppingsCate(list)
             }}
           />
         )}
         {showDiscountByPoints && (
           <DiscountPoint
+            points={points}
             setPoints={(p) => {
-              setSelecting(true)
+              if (!p) {
+                setPoints(0)
+                return
+              }
               setPoints(p)
             }}
           />
         )}
       </div>
-      <div id="total-price">
-        <span>total price: </span>
+      <div id="total-price" className="text-base font-medium">
+        <span>Total Price : </span>
         <span>{totalPrice}</span>
       </div>
       <button
-        disabled={!showCalculateFinalPrice}
+        disabled={!showDiscountButton}
         className={`w-[300px] px-4 py-2 rounded-xl transition-colors duration-200 shadow-md 
     ${
-      !showCalculateFinalPrice
+      !showDiscountButton
         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
         : 'bg-yellow-400 text-white hover:bg-yellow-500 cursor-pointer'
     }`}
         onClick={() => {
-          setSelecting(false)
           calculateFinalPrice()
         }}
       >
-        click to calculate final price
+        ใช้โค้ดลด
       </button>
-      {!selecting && (
-        <>
-          <div id="discount">
-            <span>discount: </span>
-            <span>{result.discount_price}</span>
-          </div>
-          <div id="final-price">
-            <span>final price: </span>
-            <span>{result.final_price}</span>
-          </div>
-        </>
+      {showDiscountButton && result?.discount_price !== 0 && (
+        <div id="discount" className="text-base font-medium">
+          <span className="font-medium">Discount : </span>
+          <span>{result.discount_price}</span>
+        </div>
       )}
-      {!selecting && (
+      <div id="final-price" className="text-lg font-medium">
+        <span>Final Price : </span>
+        <span>{result.final_price || totalPrice}</span>
+      </div>
+      <div className="flex gap-5">
         <button
-          className={
-            'w-[300px] px-4 py-2 rounded-xl transition-colors duration-200 shadow-md bg-pink-600 text-white hover:bg-pink-700 cursor-pointer'
-          }
+          className={`w-[300px] px-4 py-2 rounded-xl transition-colors duration-200 shadow-md 
+              bg-pink-600 text-white font-medium hover:bg-pink-700 cursor-pointer
+              disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed`}
           onClick={() => {
-            alert('order complete')
+            alert(`ชำระเงินสำเร็จ ${result?.final_price || totalPrice} บาท`)
           }}
+          disabled={!showSummitOrderButton}
         >
           สั่งสินค้า
         </button>
-      )}
+        <button
+          className="appearance-none border-none bg-gray-500 text-white font-medium px-4 py-2 
+             w-[100px] rounded-xl shadow-md transition-colors duration-200 
+             hover:bg-grey-700 cursor-pointer 
+             disabled:bg-gray-600 disabled:text-gray-500 disabled:cursor-not-allowed"
+          onClick={() => {
+            setShoppings([])
+            setCampaigns([])
+            setShoppingsCate([])
+            setPoints(0)
+            setResult({ discount_price: 0, final_price: 0 })
+          }}
+          disabled={false}
+        >
+          ยกเลิก
+        </button>
+      </div>
     </div>
   )
 }

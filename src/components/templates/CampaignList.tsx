@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Dropdown } from '../molecules'
 
-const defaultPlaceholder = 'select campaigns'
+const defaultPlaceholder = 'Select campaigns'
 
 const CampaignList = ({ campaigns, setCampaigns }) => {
-  const [label, setLabel] = useState(defaultPlaceholder)
   const [options, setOptions] = useState<any>([])
 
   const getList = useCallback(() => {
@@ -35,7 +34,6 @@ const CampaignList = ({ campaigns, setCampaigns }) => {
       if (list.length === 0) {
         setCampaigns([])
         setOptions([...options].map((option) => ({ ...option, disabled: false })))
-        setLabel(defaultPlaceholder)
         return
       }
 
@@ -64,20 +62,22 @@ const CampaignList = ({ campaigns, setCampaigns }) => {
         }
       })
       setOptions(disabledDupCateOptions)
-
-      //* for display selected label in dropdown
-      const displayLabel = list
-        .map(({ label }) => {
-          return label
-        })
-        .join(' / ')
-
-      if (displayLabel) {
-        setLabel(displayLabel)
-      }
     },
     [options],
   )
+
+  const label = useMemo(() => {
+    const displayLabel = campaigns
+      .map(({ label }) => {
+        return label
+      })
+      .join(' / ')
+
+    if (displayLabel) {
+      return displayLabel
+    }
+    return defaultPlaceholder
+  }, [campaigns])
 
   useEffect(() => {
     getList()

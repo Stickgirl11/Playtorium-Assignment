@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Dropdown } from '../molecules'
 
-const defaultPlaceholder = 'select shoppings cate'
+const defaultPlaceholder = 'Select shoppings cate'
 
 const ShoppingCateList = ({ shoppings, shoppingsCate, setShoppingsCate }) => {
-  const [label, setLabel] = useState(defaultPlaceholder)
   const [options, setOptions] = useState([])
 
   const disabledOptionByShoppings = useMemo(() => {
@@ -39,23 +38,11 @@ const ShoppingCateList = ({ shoppings, shoppingsCate, setShoppingsCate }) => {
   const handleSelect = useCallback(
     (list, current) => {
       if (list.length === 0) {
-        setLabel(defaultPlaceholder)
         setShoppingsCate([])
         return
       }
       const currentList = [{ ...current }]
       setShoppingsCate(currentList)
-
-      //* display shopping label
-      const displayLabel = currentList
-        .map(({ label }) => {
-          return label
-        })
-        .join('')
-
-      if (displayLabel) {
-        setLabel(displayLabel)
-      }
     },
     [options, shoppingsCate],
   )
@@ -64,13 +51,29 @@ const ShoppingCateList = ({ shoppings, shoppingsCate, setShoppingsCate }) => {
     getList()
   }, [])
 
+  const label = useMemo(() => {
+    const displayLabel = shoppingsCate
+      .map(({ label }) => {
+        return label
+      })
+      .join(' / ')
+
+    if (displayLabel) {
+      return displayLabel
+    }
+    return defaultPlaceholder
+  }, [shoppingsCate])
+
   return (
-    <Dropdown
-      label={label}
-      selectedValues={shoppingsCate}
-      options={disabledOptionByShoppings}
-      onChange={(list, currentSelect) => handleSelect(list, currentSelect)}
-    />
+    <div>
+      <Dropdown
+        label={label}
+        selectedValues={shoppingsCate}
+        options={disabledOptionByShoppings}
+        onChange={(list, currentSelect) => handleSelect(list, currentSelect)}
+      />
+      {shoppingsCate.length === 0 && <span className="text-red-300"> *required</span>}
+    </div>
   )
 }
 
